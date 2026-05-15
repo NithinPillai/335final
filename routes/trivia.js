@@ -26,6 +26,10 @@ router.get('/fetch', async (req, res) => {
         const questions = response.data.results;
         res.render('trivia', { questions });
     } catch (error) {
+        if (error.response && error.response.status === 429) {
+            console.error('Rate limited by API');
+            return res.status(429).send('<h2>Rate Limit Exceeded</h2><p>The trivia service is rate-limited. Please wait 5-10 seconds before trying again.</p><a href="/">Go Back</a>');
+        }
         console.error('API Fetch Error:', error.message);
         res.status(500).send('<h2>Error</h2><p>Could not reach the trivia service. Please try again later.</p><a href="/">Go Back</a>');
     }
