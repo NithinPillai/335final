@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+
+<h1>Trivia Quiz</h1>
+
+<% if (questions && questions.length > 0) { %>
+    <% questions.forEach((q, index) => { 
+        // Shuffle the answers
+        let options = [...q.incorrect_answers, q.correct_answer];
+        options.sort(() => Math.random() - 0.5);
+    %>
+        <div class="card" id="question-<%= index %>">
+            <div class="meta">
+                <%= decodeURIComponent(q.category) %> | <%= q.difficulty.toUpperCase() %>
+            </div>
+            <p><%- q.question %></p>
+            
+            <div class="options-grid">
+                <% options.forEach(opt => { %>
+                    <button type="button" 
+                            class="option-btn" 
+                            data-correct="<%= q.correct_answer %>"
+                            data-card="question-<%= index %>"
+                            onclick="checkAnswer(this)">
+                        <%- opt %>
+                    </button>
+                <% }) %>
+            </div>
+
+            <div class="feedback" style="display: none; margin-top: 1rem; font-weight: bold;"></div>
+
+            <p class="answer-reveal" style="display: none; margin-top: 1rem;">
+                <strong>Correct Answer:</strong> <%- q.correct_answer %>
+            </p>
+            
+            <form onsubmit="saveQuestion(event, this)" style="background: transparent; padding: 0; box-shadow: none; margin-top: 1rem;">
+                <input type="hidden" name="question" value="<%= q.question %>">
+                <input type="hidden" name="correct_answer" value="<%= q.correct_answer %>">
+                <input type="hidden" name="category" value="<%= q.category %>">
+                <input type="hidden" name="difficulty" value="<%= q.difficulty %>">
+                <button type="submit" class="save-btn">Save to Favorites</button>
+            </form>
+        </div>
+    <% }) %>
+<% } else { %>
+    <p style="text-align: center;">No questions found. Try different filters!</p>
+    <a href="/" style="display: block; text-align: center;">Back to Home</a>
+<% } %>
+
+<script>
+async function saveQuestion(event, form) {
+    event.preventDefault();
+    const btn = form.querySelector('button');
+    const originalText = btn.innerText;
+    
+    // Get form data
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+    
+    try {
+        btn.disabled = true;
+        btn.innerText = "Saving...";
+        
+        const response = await fetch('/trivia/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            btn.innerText = "✅ Saved!";
+            btn.style.backgroundColor = "#22c55e";
+        } else {
+            alert("Error saving question");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Network error");
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
+
+function checkAnswer(btn) {
+    const correct = btn.getAttribute('data-correct');
+    const cardId = btn.getAttribute('data-card');
+    const card = document.getElementById(cardId);
+    const feedback = card.querySelector('.feedback');
+    const reveal = card.querySelector('.answer-reveal');
+    const options = card.querySelectorAll('.option-btn');
+    
+    // Disable all buttons in this card
+    options.forEach(b => b.disabled = true);
+    
+    // Check if correct
+    if (btn.innerText.trim() === correct.trim()) {
+        btn.style.backgroundColor = "#22c55e"; // Green
+        btn.style.color = "white";
+        feedback.innerText = "✨ Correct!";
+        feedback.style.color = "#22c55e";
+    } else {
+        btn.style.backgroundColor = "#ef4444"; // Red
+        btn.style.color = "white";
+        feedback.innerText = "❌ Incorrect.";
+        feedback.style.color = "#ef4444";
+    }
+    
+    feedback.style.display = "block";
+    reveal.style.display = "block";
+}
+</script>
+
+<%- include('partials/footer') %>

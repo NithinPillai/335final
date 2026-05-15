@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<h1>Saved Questions</h1>
+
+<% if (questions && questions.length > 0) { %>
+    <div style="text-align: right; margin-bottom: 1rem;">
+        <form action="/clear" method="POST" onsubmit="return confirm('Are you sure you want to delete ALL saved questions?')">
+            <button type="submit" class="delete-btn" style="background-color: #991b1b;">🗑️ Clear All Questions</button>
+        </form>
+    </div>
+    <% questions.forEach(q => { %>
+        <div class="card" style="border-left-color: #fbbf24;">
+            <div class="meta">
+                <%= q.category %> | <%= q.difficulty.toUpperCase() %> | Saved on <%= q.dateSaved.toDateString() %>
+            </div>
+            <p><%- q.question %></p>
+            <p><strong>Answer:</strong> <%- q.correct_answer %></p>
+            
+            <form action="/delete/<%= q._id %>" method="POST" style="background: transparent; padding: 0; box-shadow: none;">
+                <button type="submit" class="delete-btn">Delete</button>
+            </form>
+        </div>
+    <% }) %>
+<% } else { %>
+    <p style="text-align: center;">You haven't saved any questions yet.</p>
+    <a href="/" style="display: block; text-align: center;">Go Fetch Some!</a>
+<% } %>
+
+<%- include('partials/footer') %>
