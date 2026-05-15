@@ -9,6 +9,10 @@
     --font-main: 'Outfit', sans-serif;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -66,8 +70,13 @@ label {
     font-size: 0.875rem;
 }
 
-select, input {
+select, input, button {
     width: 100%;
+    display: block;
+    margin: 0;
+}
+
+select, input {
     padding: 0.75rem;
     background-color: #334155;
     border: 1px solid #475569;
@@ -79,14 +88,13 @@ select, input {
 button {
     background-color: var(--primary-color);
     color: var(--bg-color);
-    border: none;
+    border: 1px solid var(--primary-color); /* Match border width of inputs */
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: 600;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
 }
 
 button:hover {

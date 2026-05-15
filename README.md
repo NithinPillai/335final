@@ -22,7 +22,7 @@ A trivia application that allows users to fetch questions from the Open Trivia D
 npillai4@terpmail.umd.edu
 
 ### Deployed App Link
-[Deployment Link - e.g., Render URL]
+[\[Deployment Link - (https://three35final-4dd7.onrender.com/)\]](https://three35final-4dd7.onrender.com/)
 
 ### AI Use
 1. **Antigravity (Google DeepMind)**: Used for project structure, boilerplate generation, and styling.
